@@ -1,19 +1,17 @@
-from django.shortcuts import render
 # Create your views here.
+from django.shortcuts import render
 from django.http import HttpResponse
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from knox.models import AuthToken
-<<<<<<< HEAD
 from .serializers import UserSerializer, RegisterSerializer
 import numpy as np
 import joblib 
-
-=======
-from .serializers import UserSerializer, RegisterSerializer, ScoreSerializer
 from knox.auth import TokenAuthentication
 from django.db import transaction
->>>>>>> 3f793383a0fbee649f316c02a96636d4227ca046
+
+from .models import Profile
+
 #fun1 fun2 fun3 fun4 fun 5 fun 6 are just for understanding, they have no use in the actual proj
 
 def fun1(request):
@@ -43,8 +41,6 @@ def fun6(request):
     return render (request,'Register.html')
 
 
-
-
 # Register API
 class RegisterAPI(generics.GenericAPIView):
     serializer_class = RegisterSerializer
@@ -53,6 +49,12 @@ class RegisterAPI(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+
+        city = request.POST["city"]
+        country = request.POST["country"]
+
+        profile = Profile(user=user, city=city, country=country)
+        profile.save()
         return Response({
         "user": UserSerializer(user, context=self.get_serializer_context()).data,
         "token": AuthToken.objects.create(user)[1]
@@ -73,9 +75,6 @@ class LoginAPI(KnoxLoginView):
         user = serializer.validated_data['user']
         login(request, user)
         return super(LoginAPI, self).post(request, format=None)
-
-<<<<<<< HEAD
-###
 
 def marking(request):
     #dict={request}
@@ -146,20 +145,6 @@ def marking(request):
 
         elif (keys == 'self_question2'):
             income_group=dict[keys]
-=======
-
-class ScoreCreateView(generics.CreateAPIView):
-    serializer_class = ScoreSerializer
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,)
-    model_path = 'path_to_your_model_file.joblib'  # Replace with the actual path to your model file
->>>>>>> 3f793383a0fbee649f316c02a96636d4227ca046
-
-    def _init_(self, *args, **kwargs):
-        super()._init_(*args, **kwargs)
-        #self.model = joblib.load(self.model_path)
-
-<<<<<<< HEAD
 
     introvert = introvert/7  
     sensing = sensing/7 
@@ -183,35 +168,129 @@ class ScoreCreateView(generics.CreateAPIView):
     
     X_TEST=X_TEST.reshape(1,15)
 
-    filename = 'final_model.sav'
-    loaded_model = joblib.load(filename)
-
-    predicted_results=loaded_model.predict_proba(X_TEST)
-
-    predicted_results = predicted_results.tolist()[0]
-
-    predicted_results = [round(num*100, 2) for num in predicted_results]
-    print(predicted_results)
-    
-    res = {}
     labels=['Biomedical Engineering', 'Chemical Engineering',
         'Civil Engineering',
         'Computer and Information Systems Engineering',
         'Electrical Engineering', 'Mechanical Engineering',
         'Software Engineering', 'Telecommunications Engineering']
-    for i in range(len(predicted_results)):
-        res[labels[i]] = predicted_results[i]
-    print(res)
 
-    from collections import Counter
+    if dict['button']==0:
+        filename1 = 'final_model.sav'
+        loaded_model = joblib.load(filename1)
+        predicted_results=loaded_model.predict_proba(X_TEST)
+        predicted_results = predicted_results.tolist()[0]
+        predicted_results = [round(num*100, 2) for num in predicted_results]
+        print(predicted_results)
+        
+        res = {}
+        
+        for i in range(len(predicted_results)):
+            res[labels[i]] = predicted_results[i]
+        print(res)
 
-    final_res = dict(Counter(res).most_common(5))
+        from collections import Counter
 
-    for k, v in final_res.items():
-        final_res[k] = str(v) + '%'
+        final_res = dict(Counter(res).most_common(5))
 
-    print(final_res)   #it is the final variable to be sent back to frontend for display
+        for k, v in final_res.items():
+            final_res[k] = str(v) + '%'
 
+        final_res=list(final_res.keys())
+        print(final_res)
+ 
+    elif dict['button']==1:
+        filename2 = 'medical_model.sav'
+        loaded_model2 = joblib.load(filename2)
+        predicted_results2=loaded_model2.predict_proba(X_TEST)
+        predicted_results2 = predicted_results2.tolist()[0]
+        predicted_results2 = [round(num*100, 2) for num in predicted_results2]
+        print(predicted_results2)
+    
+        res2 = {}
+        
+        for j in range(len(predicted_results2)):
+            res2[labels[j]] = predicted_results2[i]
+        print(res2)
+
+        final_res = dict(Counter(res2).most_common(5))
+
+        for a, b in final_res.items():
+            final_res[a] = str(b) + '%'
+        
+        final_res=list(final_res.keys())
+        print(final_res)
+
+    elif dict['button']==2:
+        filename1 = 'final_model.sav'
+        loaded_model = joblib.load(filename1)
+        predicted_results=loaded_model.predict_proba(X_TEST)
+        predicted_results = predicted_results.tolist()[0]
+        predicted_results = [round(num*100, 2) for num in predicted_results]
+        print(predicted_results)
+        
+        res = {}
+        
+        for i in range(len(predicted_results)):
+            res[labels[i]] = predicted_results[i]
+        print(res)
+
+        from collections import Counter
+
+        final_res1 = dict(Counter(res).most_common(5))
+
+        for k, v in final_res1.items():
+            final_res1[k] = str(v) + '%'
+
+        filename2 = 'medical_model.sav'
+        loaded_model2 = joblib.load(filename2)
+        predicted_results2=loaded_model2.predict_proba(X_TEST)
+        predicted_results2 = predicted_results2.tolist()[0]
+        predicted_results2 = [round(num*100, 2) for num in predicted_results2]
+        print(predicted_results2)
+    
+        res2 = {}
+        for j in range(len(predicted_results2)):
+            res2[labels[j]] = predicted_results2[i]
+        print(res2)
+
+        final_res2 = dict(Counter(res2).most_common(5))
+
+        for a, b in final_res2.items():
+            final_res2[a] = str(b) + '%'
+
+        #final_res = list(final_res.keys()) + list(final_res2.keys())
+        final_res = {}
+        final_res.update(final_res1)
+        final_res.update(final_res2)
+        print(final_res)
+#################################################xxxxxxxx
+        final_res = dict(sorted(final_res.items(), key=lambda x: float(x[1][:-1]), reverse=True)[:5])
+        final_res=list(final_res.keys())        
+
+   
+
+    redirect_url = '/results?predictions=' + json.dumps(final_res)
+    return redirect(redirect_url)
+
+
+
+
+
+
+
+
+##Today##
+# from rest_framework.views import APIView
+# from rest_framework.response import Response
+# from rest_framework.permissions import IsAuthenticated
+# from .serializers import CustomUserSerializer
+
+# class CustomUserView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request):
+#         serializer = CustomUserSerializer(request.user)
+#         return Response(serializer.data)
 
 
 
@@ -250,29 +329,40 @@ class ScoreCreateView(generics.CreateAPIView):
 #         return Response(serializer.data, status=201, headers=headers)
 # #path('scores/', ScoreCreateView.as_view(), name='create-score')
 
+    # def post(self, request, *args, **kwargs):
+    #     data = request.data.copy()
+    #     data['user'] = request.user.id
 
-=======
-    @transaction.atomic
-    def post(self, request, *args, **kwargs):
-        data = request.data.copy()
-        data['user'] = request.user.id
+    #     serializer = self.get_serializer(data=data)
+    #     serializer.is_valid(raise_exception=True)
 
-        serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
+    #     # Extract the necessary fields for the prediction
+    #     prediction_data = {
+    #         'field1': data['field1'],
+    #         'field2': data['field2'],
+    #         # Add more fields as needed...
+    #     }
 
-        # Extract the necessary fields for the prediction
-        prediction_data = {
-            'field1': data['field1'],
-            'field2': data['field2'],
-            # Add more fields as needed...
-        }
+    #     # Run the machine learning model to predict the score
+    #     #score = self.model.predict(prediction_data)
 
-        # Run the machine learning model to predict the score
-        #score = self.model.predict(prediction_data)
+    #     # Save the score along with the other fields
+    #     serializer.save(score=100)
 
-        # Save the score along with the other fields
-        serializer.save(score=100)
+    #     headers = self.get_success_headers(serializer.data)
+    #     return Response(serializer.data, status=201, headers=headers)
 
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=201, headers=headers)
->>>>>>> 3f793383a0fbee649f316c02a96636d4227ca046
+##
+# from .models import User
+
+# def user_create(request):
+#     # Assuming you have received the user data from the request
+#     username = request.POST.get('username')
+#     email = request.POST.get('email')
+#     password = request.POST.get('password')
+
+#     # Create a new User instance
+#     user = User(username=username, email=email, password=password)
+
+#     # Save the user instance to the database
+#     user.save()
